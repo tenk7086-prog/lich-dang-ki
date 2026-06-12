@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đăng ký lịch làm việc</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f5f5f7; color: #1d1d1f; display: flex; justify-content: center; }
+  .wrap { padding: 1.5rem; max-width: 680px; width: 100%; }
+  .page-title { font-size: 22px; font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; }
+  .page-sub { font-size: 14px; color: #86868b; margin-bottom: 1.5rem; }
+  .card { background: #ffffff; border: 0.5px solid #d2d2d7; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .card-title { font-size: 13px; font-weight: 500; color: #86868b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 13px; color: #86868b; }
+  .form-group input, .form-group select { height: 36px; padding: 0 10px; border-radius: 8px; border: 0.5px solid #86868b; background: #ffffff; color: #1d1d1f; font-size: 14px; outline: none; }
+  .form-group input:focus, .form-group select:focus { border-color: #0071e3; box-shadow: 0 0 0 2px rgba(0,113,227,0.15); }
+  .btn { height: 38px; padding: 0 16px; border-radius: 8px; border: none; background: #0071e3; color: #ffffff; font-size: 14px; cursor: pointer; font-weight: 500; }
+  .btn:hover { background: #0077ed; }
+  .btn:active { transform: scale(0.98); }
+  .btn-full { width: 100%; }
+  .status-banner { border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .status-open { background: #E1F5EE; color: #0F6E56; border: 0.5px solid #5DCAA5; }
+  .status-closed { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
+  .status-upcoming { background: #FAEEDA; color: #633806; border: 0.5px solid #EF9F27; }
+  .countdown { font-size: 12px; opacity: 0.8; margin-left: auto; }
+  .section-label { font-size: 13px; font-weight: 500; color: #86868b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; margin-top: 1rem; }
+  .day-group { margin-bottom: 1.25rem; }
+  .slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  .slot { background: #ffffff; border: 0.5px solid #d2d2d7; border-radius: 8px; padding: 10px 12px; }
+  .slot.full { background: #f5f5f7; opacity: 0.6; }
+  .slot-time { font-size: 13px; font-weight: 500; color: #1d1d1f; margin-bottom: 4px; }
+  .slot-count { font-size: 12px; color: #86868b; display: flex; align-items: center; gap: 4px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .dot-open { background: #1D9E75; }
+  .dot-half { background: #EF9F27; }
+  .dot-full { background: #E24B4A; }
+  .slot-people { margin-top: 6px; }
+  .person-tag { display: inline-flex; align-items: center; gap: 4px; background: #f5f5f7; border: 0.5px solid #d2d2d7; border-radius: 20px; padding: 2px 8px; font-size: 11px; color: #1d1d1f; margin: 2px 2px 0 0; }
+  .badge-full { display: inline-block; background: #FCEBEB; color: #A32D2D; font-size: 10px; padding: 1px 6px; border-radius: 20px; margin-left: 4px; border: 0.5px solid #F09595; }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #86868b; }
+  .toast { background: #ffffff; border: 0.5px solid #d2d2d7; border-radius: 8px; padding: 10px 16px; font-size: 13px; color: #1d1d1f; margin-top: 12px; display: none; }
+  .toast.show { display: block; }
+  .toast.error { border-color: #E24B4A; color: #A32D2D; }
+  .toast.success { border-color: #1D9E75; color: #0F6E56; }
+  .time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .help-text { font-size: 12px; color: #86868b; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <p class="page-title"><i class="ti ti-calendar-event" style="font-size:22px;margin-right:6px;"></i>Đăng ký lịch làm trực tuyến</p>
+  <p class="page-sub">Mỗi khung giờ nhận tối đa 2 người.</p>
+
+  <div id="status-banner" class="status-banner status-closed">
+    <span id="status-text">Đang kết nối Cloud Sheet...</span>
+    <span class="countdown" id="countdown"></span>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i class="ti ti-settings"></i> Cấu hình thời gian hệ thống (Admin)</div>
+    <div class="time-row">
+      <div class="form-group">
+        <label>Bắt đầu mở cổng</label>
+        <input type="datetime-local" id="open-time" />
+      </div>
+      <div class="form-group">
+        <label>Tự động khóa cổng</label>
+        <input type="datetime-local" id="close-time" />
+      </div>
+    </div>
+    <button class="btn" onclick="saveTimeLimit()" style="margin-top:12px;">
+      <i class="ti ti-device-floppy"></i> Lưu cấu hình lên Sheets
+    </button>
+    <div class="toast" id="toast-time"></div>
+  </div>
+
+  <div class="card" id="register-card">
+    <div class="card-title"><i class="ti ti-pencil"></i> Form đăng ký thành viên</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Họ và Tên</label>
+        <input type="text" id="name" placeholder="Nhập tên của bạn..." />
+      </div>
+      <div class="form-group">
+        <label>Chọn ngày trực</label>
+        <select id="day">
+          <option value="">-- Chọn ngày --</option>
+          <option value="T2">Thứ 2 — 16/06</option>
+          <option value="T3">Thứ 3 — 17/06</option>
+          <option value="T4">Thứ 4 — 18/06</option>
+          <option value="T5">Thứ 5 — 19/06</option>
+          <option value="T6">Thứ 6 — 20/06</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Chọn ca trực</label>
+      <select id="slot">
+        <option value="">-- Chọn giờ --</option>
+      </select>
+    </div>
+    <button class="btn btn-full" id="reg-btn" onclick="register()">
+      <i class="ti ti-check"></i> Xác nhận đăng ký ca
+    </button>
+    <div class="toast" id="toast-reg"></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="dot dot-open"></span>Còn chỗ</div>
+    <div class="legend-item"><span class="dot dot-half"></span>Còn 1 chỗ</div>
+    <div class="legend-item"><span class="dot dot-full"></span>Đã đủ ca</div>
+  </div>
+
+  <p class="section-label"><i class="ti ti-list"></i> Bảng tổng hợp lịch trực tuần này</p>
+  <div id="schedule"></div>
+</div>
+
+<script>
+// ==================== KHU VỰC LIÊN KẾT ĐÁM MÂY ====================
+// CHÚ Ý: Điền link Web App Apps Script bạn copy ở các bước trước vào giữa cặp dấu "" dưới đây:
+const SCRIPT_URL = ""; 
+// ==================================================================
+
+const HOURS = ['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00'];
+const DAYS = ['T2','T3','T4','T5','T6'];
+const DAY_LABELS = {T2:'Thứ 2 — 16/06',T3:'Thứ 3 — 17/06',T4:'Thứ 4 — 18/06',T5:'Thứ 5 — 19/06',T6:'Thứ 6 — 20/06'};
+const MAX = 2;
+
+let schedule = {};
+let openTime = null;
+let closeTime = null;
+
+function resetSchedule() {
+  DAYS.forEach(d => { schedule[d] = {}; HOURS.forEach(h => { schedule[d][h] = []; }); });
+}
+
+function loadDataFromSheets() {
+  if (!SCRIPT_URL) {
+    document.getElementById('status-text').textContent = "Cảnh báo: Bạn chưa điền SCRIPT_URL kết nối vào code!";
+    return;
+  }
+  fetch(SCRIPT_URL)
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        resetSchedule();
+        if (data.openTime) {
+          openTime = new Date(data.openTime);
+          document.getElementById('open-time').value = data.openTime.substring(0,16);
+        } else { openTime = null; }
+        if (data.closeTime) {
+          closeTime = new Date(data.closeTime);
+          document.getElementById('close-time').value = data.closeTime.substring(0,16);
+        } else { closeTime = null; }
+        
+        data.registrations.forEach(reg => {
+          if (schedule[reg.day] && schedule[reg.day][reg.hour]) {
+            schedule[reg.day][reg.hour].push(reg.name);
+          }
+        });
+        updateStatus();
+        renderSchedule();
+        updateSlotSelect();
+      }
+    })
+    .catch(() => {
+      document.getElementById('status-text').textContent = "Lỗi tải dữ liệu tự động từ Google Sheets.";
+    });
+}
+
+function isRegistrationOpen() {
+  const now = new Date();
+  if (!openTime && !closeTime) return true;
+  if (openTime && now < openTime) return false;
+  if (closeTime && now > closeTime) return false;
+  return true;
+}
+
+function formatCountdown(target, prefix) {
+  const diff = target - new Date();
+  if (diff <= 0) return '';
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  return prefix + ` ${h}g ${m}p ${s}s`;
+}
+
+function updateStatus() {
+  const now = new Date();
+  const banner = document.getElementById('status-banner');
+  const statusText = document.getElementById('status-text');
+  const countdown = document.getElementById('countdown');
+  const regBtn = document.getElementById('reg-btn');
+
+  if (!openTime && !closeTime) {
+    banner.className = 'status-banner status-open';
+    statusText.innerHTML = '<i class="ti ti-lock-open"></i>Cổng mở tự do (Chưa đặt giờ khóa)';
+    countdown.textContent = '';
+    regBtn.disabled = false;
+    return;
+  }
+  if (openTime && now < openTime) {
+    banner.className = 'status-banner status-upcoming';
+    statusText.innerHTML = `<i class="ti ti-clock"></i>Hệ thống chưa mở đăng ký (Mở lúc: ${openTime.toLocaleString('vi-VN')})`;
+    countdown.textContent = formatCountdown(openTime, 'Còn lại:');
+    regBtn.disabled = true;
+    return;
+  }
+  if (closeTime && now > closeTime) {
+    banner.className = 'status-banner status-closed';
+    statusText.innerHTML = `<i class="ti ti-lock"></i>Cổng đăng ký đã đóng tự động (${closeTime.toLocaleString('vi-VN')})`;
+    countdown.textContent = '';
+    regBtn.disabled = true;
+    return;
+  }
+  banner.className = 'status-banner status-open';
+  countdown.textContent = closeTime ? formatCountdown(closeTime, 'Đóng sau:') : '';
+  statusText.innerHTML = '<i class="ti ti-lock-open"></i>Hệ thống nhận lịch trực tuyến đang mở';
+  regBtn.disabled = false;
+}
+
+function saveTimeLimit() {
+  const ov = document.getElementById('open-time').value;
+  const cv = document.getElementById('close-time').value;
+  if (ov && cv && new Date(ov) >= new Date(cv)) {
+    showToast('toast-time', 'Lỗi: Thời gian mở cổng phải trước thời gian khóa!', 'error'); 
+    return;
+  }
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "saveConfig", openTime: ov, closeTime: cv })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "success") {
+      showToast('toast-time', 'Cập nhật mốc thời gian lên hệ thống thành công!', 'success');
+      loadDataFromSheets();
+    }
+  });
+}
+
+function register() {
+  if (!isRegistrationOpen()) { showToast('toast-reg', 'Hệ thống hiện đang khóa.', 'error'); return; }
+  const name = document.getElementById('name').value.trim();
+  const day = document.getElementById('day').value;
+  const hour = document.getElementById('slot').value;
+  
+  if (!name || !day || !hour) { showToast('toast-reg', 'Vui lòng điền đầy đủ 3 ô thông tin.', 'error'); return; }
+  if (schedule[day][hour].length >= MAX) { showToast('toast-reg', 'Ca này đã đủ 2 người.', 'error'); return; }
+  if (schedule[day][hour].includes(name)) { showToast('toast-reg', 'Tên này đã đăng ký ca này rồi.', 'error'); return; }
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "register", name: name, day: day, hour: hour })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "success") {
+      showToast('toast-reg', 'Đăng ký thành công, dữ liệu đã lưu lên Cloud!', 'success');
+      document.getElementById('name').value = '';
+      document.getElementById('slot').value = '';
+      loadDataFromSheets();
+    }
+  });
+}
+
+function updateSlotSelect() {
+  const day = document.getElementById('day').value;
+  const sel = document.getElementById('slot');
+  sel.innerHTML = '<option value="">-- Chọn giờ --</option>';
+  if (!day) return;
+  HOURS.forEach(h => {
+    const people = schedule[day][h] || [];
+    const rem = MAX - people.length;
+    const suffix = rem === 0 ? ' (Đã đủ người)' : ` (Còn ${rem} chỗ)`;
+    const opt = document.createElement('option');
+    opt.value = h; opt.textContent = h + ' – ' + (parseInt(h)+1) + ':00' + suffix;
+    if (rem === 0) opt.disabled = true;
+    sel.appendChild(opt);
+  });
+}
+
+function showToast(id, msg, type) {
+  const t = document.getElementById(id); t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+function renderSchedule() {
+  const container = document.getElementById('schedule'); container.innerHTML = '';
+  DAYS.forEach(day => {
+    const group = document.createElement('div'); group.className = 'day-group';
+    const label = document.createElement('div'); label.className = 'section-label'; label.textContent = DAY_LABELS[day];
+    group.appendChild(label);
+    const grid = document.createElement('div'); grid.className = 'slots-grid';
+    HOURS.forEach(hour => {
+      const people = schedule[day][hour] || []; const count = people.length; const isFull = count >= MAX;
+      const dotClass = count === 0 ? 'dot-open' : count === 1 ? 'dot-half' : 'dot-full';
+      const statusText = count === 0 ? 'Còn 2 chỗ' : count === 1 ? 'Còn 1 chỗ' : 'Đã đủ';
+      const slot = document.createElement('div'); slot.className = 'slot' + (isFull ? ' full' : '');
+      slot.innerHTML = `<div class="slot-time">${hour} – ${parseInt(hour)+1}:00 ${isFull ? '<span class="badge-full">Đủ</span>' : ''}</div>`
+        + `<div class="slot-count"><span class="dot ${dotClass}"></span>${statusText}</div>`
+        + `<div class="slot-people">` + people.map(p => `<span class="person-tag"><i class="ti ti-user"></i>${p}</span>`).join('') + `</div>`;
+      grid.appendChild(slot);
+    });
+    group.appendChild(grid); container.appendChild(group);
+  });
+}
+
+document.getElementById('day').addEventListener('change', updateSlotSelect);
+resetSchedule();
+loadDataFromSheets();
+setInterval(updateStatus, 1000);
+</script>
+</body>
+</html>
